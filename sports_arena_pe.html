@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏟️ الملعب التعليمي – التربية الحركية لذوي الاحتياجات الخاصة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --grass: #1a7a2a;
+    --grass-light: #2ecc40;
+    --grass-pale: #a8e6b0;
+    --white: #ffffff;
+    --yellow: #f5f500;
+    --yellow-warm: #ffd700;
+    --orange: #ff7f00;
+    --sky: #1a3a5c;
+    --line: rgba(255,255,255,0.85);
+    --card-bg: rgba(255,255,255,0.97);
+    --shadow: 0 8px 32px rgba(0,0,0,0.18);
+    --radius: 18px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--grass);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: #1a2a1a;
+  }
+
+  /* ======= FIELD BACKGROUND ======= */
+  .field-bg {
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 40px,
+        transparent 40px, transparent 80px
+      ),
+      linear-gradient(160deg, #1a7a2a 0%, #2ecc40 40%, #1a7a2a 70%, #145c20 100%);
+    z-index: 0;
+  }
+
+  /* Field lines */
+  .field-lines {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .field-lines::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    border: 3px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+  }
+  .field-lines::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    width: 3px;
+    height: 100%;
+    background: rgba(255,255,255,0.12);
+    transform: translateX(-50%);
+  }
+
+  /* ======= WRAPPER ======= */
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* ======= HERO HEADER ======= */
+  .hero {
+    text-align: center;
+    padding: 36px 20px 28px;
+    animation: dropIn 0.7s ease;
+  }
+  @keyframes dropIn {
+    from { opacity:0; transform: translateY(-40px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  .hero-icon { font-size: 56px; display: block; margin-bottom: 6px; animation: bounce 1.6s infinite; }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+
+  .hero h1 {
+    font-family: 'Tajawal', sans-serif;
+    font-size: clamp(22px, 5vw, 38px);
+    font-weight: 900;
+    color: var(--white);
+    text-shadow: 0 3px 12px rgba(0,0,0,0.4);
+    line-height: 1.3;
+  }
+  .hero h1 span { color: var(--yellow); }
+
+  .hero-sub {
+    margin-top: 8px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+  }
+
+  /* ======= TABS ======= */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 18px 0 24px;
+  }
+
+  .tab-btn {
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 40px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tab-btn:hover, .tab-btn.active {
+    background: var(--yellow);
+    border-color: var(--yellow);
+    color: #1a2a00;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255,255,0,0.4);
+  }
+
+  /* ======= SECTION ======= */
+  .section { display: none; }
+  .section.active { display: block; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* ======= CARD BASE ======= */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+    border-right: 5px solid var(--grass-light);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.2); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .card-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .card-title { font-size: 17px; font-weight: 800; color: #1a3a1a; }
+  .card-body { font-size: 14px; line-height: 1.9; color: #2a3a2a; }
+
+  /* Color variants */
+  .card.green  { border-right-color: #2ecc40; }
+  .card.blue   { border-right-color: #0074d9; }
+  .card.orange { border-right-color: #ff7f00; }
+  .card.purple { border-right-color: #9b59b6; }
+  .card.red    { border-right-color: #e74c3c; }
+  .card.teal   { border-right-color: #1abc9c; }
+
+  .icon-green  { background: #d5f5d5; }
+  .icon-blue   { background: #d0e8ff; }
+  .icon-orange { background: #ffe0b0; }
+  .icon-purple { background: #ecd9f9; }
+  .icon-red    { background: #fdd9d7; }
+  .icon-teal   { background: #d1f5ee; }
+
+  /* ======= HIGHLIGHT BADGE ======= */
+  .badge {
+    display: inline-block;
+    background: var(--grass-light);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin: 3px 2px;
+  }
+  .badge.yellow  { background: #d4a000; color: #fff; }
+  .badge.orange  { background: #e67e22; }
+  .badge.purple  { background: #8e44ad; }
+  .badge.blue    { background: #2980b9; }
+  .badge.red     { background: #c0392b; }
+
+  /* ======= GOALS GRID ======= */
+  .goals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+  @media(max-width:520px){ .goals-grid { grid-template-columns: 1fr; } }
+
+  .goal-item {
+    background: linear-gradient(135deg, #efffef, #d5f5d5);
+    border-radius: 12px;
+    padding: 12px 14px;
+    border-right: 4px solid var(--grass-light);
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a3a1a;
+  }
+  .goal-item .g-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+
+  /* ======= STEPS LIST ======= */
+  .steps { list-style: none; }
+  .steps li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #2a3a2a;
+    line-height: 1.7;
+  }
+  .step-num {
+    width: 26px; height: 26px;
+    background: var(--grass-light);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  /* ======= TAXONOMY TABLE ======= */
+  .tax-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  .tax-table th {
+    background: var(--grass);
+    color: white;
+    padding: 10px 12px;
+    text-align: right;
+    font-weight: 700;
+  }
+  .tax-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #e0f0e0;
+    color: #2a3a2a;
+    line-height: 1.6;
+  }
+  .tax-table tr:nth-child(even) td { background: #f0fbf0; }
+
+  /* ======= SECTION DIVIDER ======= */
+  .sec-divider {
+    text-align: center;
+    margin: 28px 0 18px;
+    position: relative;
+  }
+  .sec-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 2px;
+    background: rgba(255,255,255,0.3);
+  }
+  .sec-divider span {
+    position: relative;
+    background: transparent;
+    padding: 0 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 1px;
+  }
+
+  /* ======= QUIZ SECTION ======= */
+  .quiz-header {
+    text-align: center;
+    margin-bottom: 22px;
+  }
+  .quiz-header h2 {
+    font-size: clamp(18px, 4vw, 28px);
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .quiz-header p { color: rgba(255,255,255,0.85); font-size: 13px; margin-top: 4px; }
+
+  /* Score board */
+  .scoreboard {
+    background: rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(8px);
+    border: 2px solid rgba(255,255,255,0.3);
+  }
+  .score-item { text-align: center; }
+  .score-num { font-size: 26px; font-weight: 900; color: var(--yellow); line-height: 1; }
+  .score-label { font-size: 11px; color: rgba(255,255,255,0.8); font-weight: 600; margin-top: 2px; }
+
+  /* Quiz type tabs */
+  .quiz-tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .qtab {
+    padding: 8px 16px;
+    border-radius: 30px;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.12);
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .qtab.active, .qtab:hover {
+    background: var(--yellow-warm);
+    border-color: var(--yellow-warm);
+    color: #1a1a00;
+    box-shadow: 0 4px 12px rgba(255,215,0,0.4);
+  }
+
+  /* Q Card */
+  .q-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transition: transform 0.2s;
+  }
+  .q-card:hover { transform: translateY(-2px); }
+
+  .q-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--grass);
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .q-num .qtype-badge {
+    background: var(--grass-light);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+  }
+  .q-text { font-size: 14px; font-weight: 700; color: #1a2a1a; margin-bottom: 14px; line-height: 1.7; }
+
+  /* True/False balls */
+  .tf-options { display: flex; gap: 10px; }
+  .tf-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid #e0e0e0;
+    background: #f8f8f8;
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .tf-btn:hover { border-color: var(--grass-light); background: #efffef; }
+  .tf-btn.correct { background: #d5f5d5; border-color: var(--grass-light); color: #145c20; }
+  .tf-btn.wrong   { background: #fdd9d7; border-color: #e74c3c; color: #7a0000; }
+  .tf-btn.reveal  { background: #fff9c4; border-color: #d4a000; }
+
+  /* MCQ options */
+  .mcq-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media(max-width:480px){ .mcq-options { grid-template-columns: 1fr; } }
+  .mcq-btn {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    background: #f8f8f8;
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: right;
+    transition: all 0.2s;
+    line-height: 1.5;
+  }
+  .mcq-btn:hover { border-color: var(--grass-light); background: #efffef; }
+  .mcq-btn.correct { background: #d5f5d5; border-color: var(--grass-light); color: #145c20; }
+  .mcq-btn.wrong   { background: #fdd9d7; border-color: #e74c3c; }
+  .mcq-btn.show-correct { background: #fff9c4; border-color: #d4a000; }
+
+  /* Answer reveal */
+  .ans-reveal {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #efffef, #d5f5d5);
+    border-radius: 10px;
+    border-right: 4px solid var(--grass-light);
+    font-size: 13px;
+    font-weight: 600;
+    color: #145c20;
+    display: none;
+    animation: fadeUp 0.3s ease;
+  }
+  .ans-reveal.show { display: block; }
+  .ans-reveal .medal { font-size: 20px; margin-left: 6px; }
+
+  /* Flip card (essay) */
+  .flip-container {
+    perspective: 1000px;
+    height: auto;
+    min-height: 120px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .flip-inner {
+    position: relative;
+    width: 100%;
+    min-height: 80px;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+  }
+  .flip-container.flipped .flip-inner { transform: rotateY(180deg); }
+  .flip-front, .flip-back {
+    position: absolute;
+    width: 100%; left: 0; top: 0;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    padding: 14px;
+    min-height: 80px;
+  }
+  .flip-front {
+    background: linear-gradient(135deg, #1a7a2a, #2ecc40);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    gap: 8px;
+  }
+  .flip-back {
+    background: #fff9e0;
+    transform: rotateY(180deg);
+    border: 2px solid #d4a000;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #2a2a00;
+  }
+
+  /* Static essay (non-flip for mobile compat) */
+  .essay-toggle-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #1a7a2a, #2ecc40);
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .essay-toggle-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+  .essay-answer {
+    margin-top: 10px;
+    padding: 14px 16px;
+    background: #fff9e0;
+    border-radius: 10px;
+    border: 2px solid #d4a000;
+    font-size: 13px;
+    line-height: 1.9;
+    color: #2a2a00;
+    display: none;
+  }
+  .essay-answer.show { display: block; animation: fadeUp 0.3s ease; }
+
+  /* Results button */
+  .result-btn {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    margin: 24px auto;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--yellow-warm), var(--orange));
+    border: none;
+    border-radius: 40px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(255,165,0,0.5);
+    transition: all 0.2s;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  .result-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 30px rgba(255,165,0,0.6); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+    display: none;
+  }
+  .modal-overlay.show { display: flex; animation: fadeUp 0.3s ease; }
+  .modal-box {
+    background: white;
+    border-radius: 22px;
+    padding: 32px 24px;
+    text-align: center;
+    max-width: 360px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .modal-trophy { font-size: 64px; display: block; margin-bottom: 12px; }
+  .modal-title { font-size: 22px; font-weight: 900; color: #1a3a1a; margin-bottom: 6px; }
+  .modal-score-big { font-size: 48px; font-weight: 900; color: var(--grass); line-height: 1; }
+  .modal-msg { font-size: 14px; color: #555; margin: 10px 0 20px; line-height: 1.6; }
+  .modal-close {
+    padding: 12px 32px;
+    background: var(--grass-light);
+    border: none;
+    border-radius: 30px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--grass); }
+
+  /* Accordion for sub-sections */
+  .accordion { margin-bottom: 10px; }
+  .acc-header {
+    background: linear-gradient(135deg, #1a7a2a, #2ecc40);
+    color: white;
+    padding: 13px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .acc-header:hover { opacity: 0.9; }
+  .acc-arrow { transition: transform 0.3s; font-size: 12px; }
+  .accordion.open .acc-arrow { transform: rotate(180deg); }
+  .acc-body {
+    display: none;
+    background: white;
+    border-radius: 0 0 12px 12px;
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.9;
+    color: #2a3a2a;
+    border: 1px solid #e0f0e0;
+    border-top: none;
+  }
+  .accordion.open .acc-body { display: block; animation: fadeUp 0.3s ease; }
+
+  /* Key terms */
+  .terms-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  @media(max-width:480px){ .terms-grid { grid-template-columns: 1fr; } }
+  .term-card {
+    background: linear-gradient(135deg, #efffef, #d5f5d5);
+    border-radius: 12px;
+    padding: 12px;
+    border-right: 3px solid var(--grass-light);
+  }
+  .term-ar { font-size: 14px; font-weight: 800; color: #1a3a1a; }
+  .term-en { font-size: 11px; font-weight: 600; color: #558055; margin-top: 2px; }
+
+  /* Floating balls decoration */
+  .deco-ball {
+    position: fixed;
+    border-radius: 50%;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .deco-ball.b1 { width:120px; height:120px; background:var(--yellow); top:10%; right:-30px; }
+  .deco-ball.b2 { width:80px; height:80px; background:white; bottom:20%; left:-20px; }
+  .deco-ball.b3 { width:60px; height:60px; background:var(--yellow-warm); top:50%; right:5%; }
+
+  /* Responsive adjustments */
+  @media(max-width:480px) {
+    .card { padding: 16px 14px; }
+    .card-title { font-size: 15px; }
+    .card-body { font-size: 13px; }
+  }
+
+  /* Progress bar */
+  .progress-wrap { margin-bottom: 8px; }
+  .progress-label { font-size: 12px; color: white; font-weight: 600; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .progress-bar-bg { background: rgba(255,255,255,0.2); border-radius: 20px; height: 8px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--yellow); border-radius: 20px; transition: width 0.5s ease; }
+
+  /* Keyword box */
+  .keyword-box {
+    background: linear-gradient(135deg, #1a7a2a, #145c20);
+    color: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .keyword-box h3 { font-size: 15px; font-weight: 800; margin-bottom: 12px; color: var(--yellow); }
+  .kw-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.15); font-size: 13px; }
+  .kw-row:last-child { border-bottom: none; }
+  .kw-ar { font-weight: 700; }
+  .kw-en { color: rgba(255,255,255,0.75); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<div class="field-bg"></div>
+<div class="field-lines"></div>
+<div class="deco-ball b1"></div>
+<div class="deco-ball b2"></div>
+<div class="deco-ball b3"></div>
+
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="hero-icon">🏟️</span>
+    <h1>الملعب التعليمي<br><span>التربية الحركية لذوي الاحتياجات الخاصة</span></h1>
+    <p class="hero-sub">📚 الفصل الأول | د. جيهان عزام | منهج شامل وتفاعلي</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showSection('content')">📖 المحتوى الدراسي</button>
+    <button class="tab-btn" onclick="showSection('quiz')">🏆 المباراة النهائية</button>
+    <button class="tab-btn" onclick="showSection('terms')">📋 المصطلحات</button>
+  </div>
+
+  <!-- ========== CONTENT SECTION ========== -->
+  <div class="section active" id="sec-content">
+
+    <!-- Card 1: Intro -->
+    <div class="card green">
+      <div class="card-header">
+        <div class="card-icon icon-green">🎯</div>
+        <div class="card-title">مقدمة – ماذا تتوقع أن تتعلم؟</div>
+      </div>
+      <div class="card-body">
+        اهتمّت الحركة بصورة رئيسية بالأشخاص ذوي الاحتياجات الخاصة، وتُعدّ التربية الحركية وسيلةً فعّالة لتعزيز جوانبهم المختلفة: الجسمية، والنفسية، والاجتماعية، والانفعالية. تناولت مدارس التربية الحركية هذا الميدان وطوّرت مناهج وطرقاً متعددة، وانبثقت منظمات متعددة على مستوى دولي لتُرسّخ هذا التخصص وترتقي به.
+      </div>
+    </div>
+
+    <!-- Objectives -->
+    <div class="card blue">
+      <div class="card-header">
+        <div class="card-icon icon-blue">🏅</div>
+        <div class="card-title">أهداف الفصل الأول</div>
+      </div>
+      <div class="card-body">
+        <p style="margin-bottom:10px;font-weight:600;">بعد دراسة هذا الفصل، يجب أن يكون الطلاب قادرين على:</p>
+        <div class="goals-grid">
+          <div class="goal-item"><span class="g-icon">📌</span>تحديد مفهوم التربية الحركية لذوي الاحتياجات الخاصة</div>
+          <div class="goal-item"><span class="g-icon">🔍</span>تحديد أهمية التربية الحركية لذوي الاحتياجات الخاصة</div>
+          <div class="goal-item"><span class="g-icon">⚙️</span>الإلمام بالعوامل التي يجب توافرها في مقدم برامج التربية الحركية</div>
+          <div class="goal-item"><span class="g-icon">🔄</span>وضع خطوط آلية للتربية الحركية المصاحبة لكل إعاقة</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-divider"><span>⚽ التربية الحركية لذوي الاحتياجات الخاصة ⚽</span></div>
+
+    <!-- Development -->
+    <div class="card orange">
+      <div class="card-header">
+        <div class="card-icon icon-orange">🌱</div>
+        <div class="card-title">التربية الحركية – المفهوم العام</div>
+      </div>
+      <div class="card-body">
+        <p>تعتبر مرحلة الطفولة من أهم المراحل في حياة الإنسان؛ ففي هذه المرحلة ينمو الطفل نمواً طبيعياً وتتشكّل شخصيته. والتربية الحركية هي التربية <strong>من خلال الحركة</strong> وليست مجرد تدريب بدني.</p>
+        <br>
+        <p>يرى <span class="badge">Werner</span> أن أطفال مجتمعات ريفية يصلون إلى درجات أعلى في الوعي الحسي والحركي الحجمي مقارنةً بمجتمعات حضرية، لأنهم يُتاح لهم فرص حركية أوسع في بيئتهم الطبيعية.</p>
+        <br>
+        <p>يرى <span class="badge blue">Gallhue</span> أن الحركة الحرة والفعّالة لها ثلاثة محاور رئيسية يُعيش الطفل من خلالها في بيئة محيطة به:</p>
+        <ul style="margin-top:8px;padding-right:16px;line-height:2;">
+          <li>التطور الحركي المستمر</li>
+          <li>التطور الاجتماعي والانفعالي</li>
+          <li>التطور المعرفي والوجداني</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Who are special needs -->
+    <div class="card purple">
+      <div class="card-header">
+        <div class="card-icon icon-purple">♿</div>
+        <div class="card-title">من هم ذوو الاحتياجات الخاصة؟</div>
+      </div>
+      <div class="card-body">
+        <p>ذوو الاحتياجات الخاصة هم من يعانون <strong>قصوراً في حواسهم أو قصوراً في أعضائهم</strong> مما يجعلهم في حاجة إلى برامج تربوية وإعادة تأهيل خاصة. وقد يكون هذا القصور جسمياً أو عقلياً.</p>
+        <br>
+        <p>لذلك تحتاج التربية الحركية لهؤلاء الأطفال إلى برامج خاصة تُساعدهم على:</p>
+        <ul style="margin-top:8px;padding-right:16px;line-height:2;">
+          <li>تحقيق نمو حركي كامل وطبيعي قدر الإمكان</li>
+          <li>تنمية المهارات الحركية ضمن حدود إعاقتهم</li>
+          <li>تحقيق الاندماج الاجتماعي والانفعالي والنفسي</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Concept of movement education -->
+    <div class="card teal">
+      <div class="card-header">
+        <div class="card-icon icon-teal">💡</div>
+        <div class="card-title">مفهوم التربية الحركية</div>
+      </div>
+      <div class="card-body">
+        <p>التربية الحركية مرحلة أساسية تشمل نمو الطفل <strong>الحركي، والمعرفي، والصحي</strong>. وهي جزء أساسي مكمّل للعملية التربوية والتعليمية.</p>
+        <br>
+        <p>تُعدّ التربية الحركية ذات بُعدين رئيسيين متكاملين وفقاً لـ<span class="badge">Gallhue (1996)</span> وآخرين:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+          <div style="background:#efffef;border-radius:10px;padding:12px;text-align:center;border:2px solid var(--grass-light);">
+            <div style="font-size:22px;margin-bottom:4px;">🏃</div>
+            <div style="font-weight:800;font-size:13px;color:#1a3a1a;">نمو الحركة</div>
+            <div style="font-size:12px;color:#3a5a3a;margin-top:4px;">التحسن التلقائي والتدريجي للمهارات الحركية</div>
+          </div>
+          <div style="background:#efffef;border-radius:10px;padding:12px;text-align:center;border:2px solid var(--grass-light);">
+            <div style="font-size:22px;margin-bottom:4px;">🎓</div>
+            <div style="font-weight:800;font-size:13px;color:#1a3a1a;">التعلم من خلال الحركة</div>
+            <div style="font-size:12px;color:#3a5a3a;margin-top:4px;">اكتساب معارف ومفاهيم ومهارات عبر النشاط الحركي</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Goals of movement ed for special needs -->
+    <div class="card green">
+      <div class="card-header">
+        <div class="card-icon icon-green">🎯</div>
+        <div class="card-title">أهداف التربية الحركية لذوي الاحتياجات الخاصة</div>
+      </div>
+      <div class="card-body">
+
+        <div class="accordion" onclick="toggleAcc(this)">
+          <div class="acc-header">
+            🏋️ أولاً: الأهداف الحركية
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body">
+            <ul class="steps">
+              <li><div class="step-num">1</div><div>اكتساب الطفل المعاق لياقةً حركية، ولياقةً بدنية وصحية بما يناسب طبيعته وقدراته، وذلك من خلال الانتظام في برامج وأنشطة حركية متنوعة.</div></li>
+              <li><div class="step-num">2</div><div>تنمية مهارات حركية تُتيح للطفل الاشتراك في الأنشطة والألعاب الجماعية والفردية والحياتية الأساسية.</div></li>
+              <li><div class="step-num">3</div><div>تنمية صفات بدنية كالقوة، وتقوية الجهاز العضلي الهيكلي بما يتناسب مع طبيعة الطفل وظروفه وإعاقته.</div></li>
+              <li><div class="step-num">4</div><div>إكساب الحس الحركي لكل طفل بما يشمل:
+                <ul style="margin-top:6px;padding-right:16px;line-height:2.2;">
+                  <li><span class="badge">الوعي بالجسم</span> – معرفة الطفل بأجزاء جسمه وتحريكها بأشكال مختلفة</li>
+                  <li><span class="badge blue">الوعي المكاني</span> – معرفة الطفل بحجمه في الفراغ ومكانه بالنسبة للأشياء الخارجية</li>
+                  <li><span class="badge orange">الوعي الاتجاهي</span> – معرفة الاتجاهات المختلفة (يميناً، يساراً، أماماً، خلفاً)</li>
+                  <li><span class="badge purple">الوعي الزماني</span> – معرفة الطفل بالوقت ومطابقته بالإيقاع والأنماط الوقتية</li>
+                </ul>
+              </div></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion" onclick="toggleAcc(this)">
+          <div class="acc-header">
+            🤝 ثانياً: الأهداف الاجتماعية والنفسية والصحية والانفعالية
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body">
+            <p style="font-weight:700;color:#1a3a1a;margin-bottom:10px;">أ– الجانب الاجتماعي:</p>
+            <ul class="steps">
+              <li><div class="step-num">✦</div><div>اكتساب الطفل مهارات الاجتماعية عن طريق الاشتراك في الأنشطة والألعاب الحركية الجماعية</div></li>
+              <li><div class="step-num">✦</div><div>اكتساب الطفل الإيجابية والتفاعل الاجتماعي بين الأطفال بعضهم البعض</div></li>
+              <li><div class="step-num">✦</div><div>اكتساب الطفل مشاعر المواطنة مرتبطة بالممارسة البدنية</div></li>
+              <li><div class="step-num">✦</div><div>اكتساب الطفل مشاعر ثقافية مرتبطة بنشاط بدني</div></li>
+            </ul>
+            <br>
+            <p style="font-weight:700;color:#1a3a1a;margin-bottom:10px;">ب– أهمية ممارسة النشاط البدني من أجل الصحة والوقاية من الأمراض:</p>
+            <ul class="steps">
+              <li><div class="step-num">✦</div><div>تعليم الطفل بأهمية الأداء الجيد من أجل الصحة</div></li>
+              <li><div class="step-num">✦</div><div>اكتساب الطفل التحكم في الانفعالات في حالة نافسة مع أقرانه</div></li>
+            </ul>
+            <br>
+            <p style="font-weight:700;color:#1a3a1a;margin-bottom:10px;">ج– الجانب النفسي (الحركة وسيلة لـ):</p>
+            <ul class="steps">
+              <li><div class="step-num">✦</div><div>تقوية وتعبير الذات</div></li>
+              <li><div class="step-num">✦</div><div>الحركة وسيلة لتعبير الانفعالات المكبوتة والتخلص من الهواجس والمخاوف</div></li>
+              <li><div class="step-num">✦</div><div>وسيلة لإطار الطفل نحو بناء الفكر والصفاء الذهني</div></li>
+              <li><div class="step-num">✦</div><div>التعبير الحركي يُساهم في تنمية مفهوم الذات والثقة بالنفس</div></li>
+              <li><div class="step-num">✦</div><div>الحركة يمكن اعتبارها شكلاً من أشكال الاتصال والتكيف الاجتماعي</div></li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Motor Development -->
+    <div class="card red">
+      <div class="card-header">
+        <div class="card-icon icon-red">🔄</div>
+        <div class="card-title">التطور الحركي</div>
+      </div>
+      <div class="card-body">
+        <p>الحركة تطور إنساني؛ فالحركة الأولية التي يُبدأ بها الطفل منذ جلوسه وزحفه ووقوفه ورشمه وضربه هي حركات أساسية يُتيحها الطفل طبيعياً دون تعليم.</p>
+        <br>
+        <p>الطفل يتعلم عبر الحركة ليكشف محيطه الذي يحيط به، وهذا مبني طبيعياً. <strong>الحركة هي طريق الطفل الأول للتعلم.</strong></p>
+        <br>
+        <p>تبدأ هذه الحركات الأولية من مرحلة الرضاعة وقبل الخطو رسمياً، كي ينمو نحو الطفولة بنمو جسمي واجتماعي وإدراكي وحركي. ومن حيث يبدأ خلالها في الأول من:</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+          <span class="badge">مرحلة الانبطاح</span>
+          <span class="badge blue">الزحف</span>
+          <span class="badge orange">الجلوس</span>
+          <span class="badge purple">الوقوف</span>
+          <span class="badge red">المشي</span>
+          <span class="badge yellow">الجري</span>
+        </div>
+        <br>
+        <p>وتُعدّ الحركة والأنشطة البدنية أساس كل تعلم ومعرفة؛ فهي تُيسّر تنمية المهارة الذاتية والانفعالية واللياقة والاتجاه الإيجابي نحو النشاط.</p>
+      </div>
+    </div>
+
+    <!-- Taxonomy -->
+    <div class="card blue">
+      <div class="card-header">
+        <div class="card-icon icon-blue">📊</div>
+        <div class="card-title">تقسيم المجال النفس-حركي (Taxonomy of Psychomotor Domain)</div>
+      </div>
+      <div class="card-body">
+        <p>وُضع هذا التصنيف عام 1972 من قِبل <span class="badge">Hare</span> وطُوِّر لاحقاً ليُستخدم كإطار مرجعي للأهداف السلوكية في التربية الحركية.</p>
+        <br>
+        <table class="tax-table">
+          <tr><th>المستوى</th><th>التعريف</th><th>الأمثلة</th></tr>
+          <tr><td>الحركات الانعكاسية</td><td>حركات لا إرادية فطرية موجودة منذ الولادة، تنمو بشكل منتظم</td><td>ردود الأفعال العصبية، الانعكاسات الأولية</td></tr>
+          <tr><td>الحركات الأساسية الأصلية</td><td>حركات فطرية مجبولة وحركات مهارية أساسية خاصة بالطفولة</td><td>الاستناد، الحركة غير الاستنادية، الإجائية</td></tr>
+          <tr><td>القدرات الحركية</td><td>تشمل كافة الوعي الحركي بموجودها وتُعبّر عن درجة التحكم في التوازن</td><td>التوازن الجانبي، الإدراك البصري، الوظيفية</td></tr>
+          <tr><td>القدرات البدنية</td><td>تتعلق بنمو البدن الذي يُحدث مكونات لياقة بدنية</td><td>الحجم، التحمل، المرونة، الطاقة</td></tr>
+          <tr><td>الحركات المهارية</td><td>تُعبّر عن الكفاءة في أداء أنواع من التجانس الحركي</td><td>مهارة بسيطة، مركبة، ومعقدة</td></tr>
+          <tr><td>الاتصال الحركي</td><td>أشكال متعددة وحركات للتواصل اللفظي وغير اللفظي</td><td>حركات تعبيرية، إيمائية، تفسيرية</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Dimensions of movement -->
+    <div class="card teal">
+      <div class="card-header">
+        <div class="card-icon icon-teal">🧭</div>
+        <div class="card-title">أبعاد الحركة الأربعة</div>
+      </div>
+      <div class="card-body">
+        <p style="margin-bottom:12px;">يتضمن مفهوم أبعاد الحركة أربعة جوانب محددة:</p>
+
+        <div class="accordion" onclick="toggleAcc(this)">
+          <div class="acc-header">📍 البُعد الأول: الوعي الفراغي <span class="acc-arrow">▼</span></div>
+          <div class="acc-body">
+            <p>الفراغ هو المسافة الموجودة التي يتحرك فيها الطفل أثناء حركته، وقد يكون هذا الفراغ شخصياً أو عاماً.</p>
+            <br>
+            <p style="font-weight:700;margin-bottom:6px;">أبعاد الفراغ:</p>
+            <ul class="steps">
+              <li><div class="step-num">أ</div><div><strong>الاتجاه:</strong> معرفة الطفل بحركات جسمه في الفراغ من قبل الاتجاه نحو اتجاهات مختلفة (أمام، خلف، يمين، يسار، جانب)</div></li>
+              <li><div class="step-num">ب</div><div><strong>المستوى والمحور:</strong> يتحرك الجسم في الفراغ في مستويات ومحاور متنوعة كالمستويات الرأسية والجانبية والأفقية العودية</div></li>
+              <li><div class="step-num">ج</div><div><strong>المسار:</strong> هو خط الحركة المتكأ يتحرك خلاله الشخص في الفراغ من نقطة إلى أخرى، وقد يكون الحركة متكأ مستقيم أو دائري</div></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion" onclick="toggleAcc(this)">
+          <div class="acc-header">👤 البُعد الثاني: الوعي بالجسم <span class="acc-arrow">▼</span></div>
+          <div class="acc-body">
+            <p>يعني قدرة الطفل على معرفة وتحديد حركة الجسم ككل وحركة أجزائه والوعي بحركات الجسم. ووفق أهدافه منذ طفولة مبكرة وقبل خطوة كي ينمو نحو الطفولة بوعي وإحساس مناسب لجسمه.</p>
+          </div>
+        </div>
+
+        <div class="accordion" onclick="toggleAcc(this)">
+          <div class="acc-header">⏱️ البُعد الثالث: نوع الحركة وزمنها <span class="acc-arrow">▼</span></div>
+          <div class="acc-body">
+            <p>وهي الصفات والخصائص المحددة النوعية للحركة واختلافها يعتمد من خلال الزمن والتدفق اليدائي. كلما كان الزمن قصيراً ذهابا كان كلما كانت الحركة سريعة.</p>
+            <br>
+            <p>الحركات المنفردة هي تلك الحركات التي يتحرك فيها الجسم مسافة متساوية في أزمنة متساوية، أما الحركات غير المنفردة فهي كل الحركات التي يتحرك فيها الجسم مسافات متساوية في أزمنة مختلفة وبالعكس.</p>
+          </div>
+        </div>
+
+        <div class="accordion" onclick="toggleAcc(this)">
+          <div class="acc-header">🤸 البُعد الرابع: الدلالات الحركية (العلاقات) <span class="acc-arrow">▼</span></div>
+          <div class="acc-body">
+            <p>يُعنى هذا البُعد بالعلاقة بين أجزاء الجسم وبين الجسم والأشياء الأخرى في المحيط. يتعلق بكيفية تكيف الجسم مع الآخرين والأشياء من حوله أثناء الحركة.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Considerations for program presenter -->
+    <div class="card orange">
+      <div class="card-header">
+        <div class="card-icon icon-orange">🏫</div>
+        <div class="card-title">اعتبارات هامة لمقدم برامج التربية الحركية للمعاقين</div>
+      </div>
+      <div class="card-body">
+        <ul class="steps">
+          <li><div class="step-num">1</div><div><strong>الخبرة الحركية ذات معنى للطفل المعاق:</strong> يجب أن تراعي أهداف البرنامج التدريسي الفروق الفردية وطبيعة الطفل وظروفه التربوية والنفسية وفق نوع الإعاقة.</div></li>
+          <li><div class="step-num">2</div><div><strong>إعداد الأنشطة الحركية للطفل المعاق:</strong> يجب على مقدم البرنامج أن يدرك ما يريد إعداده من الأنشطة الحركية بما يكفل كافة المستويات والأعباء.</div></li>
+          <li><div class="step-num">3</div><div><strong>مراعاة الحمل في العمل مع الطفل المعاق:</strong> فيجب أن يُراعى التوازن بين الحمل والراحة في كافة الأنشطة الحركية من خلال الآليات المعتمدة أو التدرج في الحمل.</div></li>
+          <li><div class="step-num">4</div><div><strong>إتاحة فرص الاشتراك لكل الأطفال:</strong> فلا يُجوز إبعاد أي طفل هشاشة خلال الأداء الحركي النهائي، ولا يتعلم بحدّ ذاته وهذا خطأ شائع.</div></li>
+          <li><div class="step-num">5</div><div><strong>إبراز خبرة النجاح وعناصر الدافعية:</strong> فتنوع الأنشطة المناسبة للطفل يُعزز من احتمالات النجاح في الأداء.</div></li>
+          <li><div class="step-num">6</div><div><strong>توفير الوقت الملائم للتعلم الحركي:</strong> يتم من خلال شرح مبسط وراحة بين التكرار وتحفيز الوصول إلى الحركة وتوفير اللعب والوقت في جسده وحركته.</div></li>
+          <li><div class="step-num">7</div><div><strong>تجنب عقد مقارنات بين مستويات الأطفال:</strong> في مجال التعلم الحركي التعبيري، يُساوي الطفل وحده ذاته الأولية وقد ينجح الطفل في أداء نوع الجانب الحركي المعين وقد لا ينجح في أداء نوع الجانب الآخر.</div></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card green">
+      <div class="card-header">
+        <div class="card-icon icon-green">📝</div>
+        <div class="card-title">الخلاصة – أبرز ما تعلمناه</div>
+      </div>
+      <div class="card-body">
+        <p>كطالب، بعد إتمام هذا الفصل يجب أن تكون قد تمكّنت من تحقيق أهدافه الدراسية.</p>
+        <br>
+        <p>ينبغي أن يكون لديكم اتجاه إيجابي نحو أهمية التربية الحركية للطفل عامةً وللطفل المعاق بصفة خاصة، وأن تُدركوا مفهومها وكيفية تطبيقها مع الطفل، وكذلك أهدافها: الذاتية، والاجتماعية، والنفسية، والصحية، والانفعالية.</p>
+        <br>
+        <p>كذلك إسهاماتها في قية الجوانب الاجتماعية للطفل، وفهم تطور الحركة لدى الطفل المعاق، ومجالات الحركة وقسيمها إلى الستة مجالات ومفهوم أبعاد الحركة والجوانب المحددة بها.</p>
+      </div>
+    </div>
+
+  </div><!-- END content -->
+
+  <!-- ========== QUIZ SECTION ========== -->
+  <div class="section" id="sec-quiz">
+
+    <div class="quiz-header">
+      <h2>🏆 المباراة النهائية – 60 سؤال</h2>
+      <p>أجب عن الأسئلة واكسب النقاط!</p>
+    </div>
+
+    <div class="scoreboard">
+      <div class="score-item">
+        <div class="score-num" id="score-correct">0</div>
+        <div class="score-label">✅ صحيح</div>
+      </div>
+      <div class="score-item">
+        <div class="score-num" id="score-wrong">0</div>
+        <div class="score-label">❌ خطأ</div>
+      </div>
+      <div class="score-item">
+        <div class="score-num" id="score-total">60</div>
+        <div class="score-label">📋 إجمالي</div>
+      </div>
+      <div class="score-item">
+        <div class="score-num" id="score-pct">0%</div>
+        <div class="score-label">🏅 نسبة</div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span>التقدم في المباراة</span><span id="progress-text">0 / 50</span></div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="quiz-tabs">
+      <button class="qtab active" onclick="filterQuiz('all',this)">🎯 الكل</button>
+      <button class="qtab" onclick="filterQuiz('tf',this)">✅ صح/خطأ (25)</button>
+      <button class="qtab" onclick="filterQuiz('mcq',this)">🔵 اختياري (25)</button>
+      <button class="qtab" onclick="filterQuiz('essay',this)">✍️ مقالي (10)</button>
+    </div>
+
+    <div id="quiz-container"></div>
+
+    <button class="result-btn" onclick="showResults()">🏅 عرض النتيجة النهائية</button>
+
+  </div><!-- END quiz -->
+
+  <!-- ========== TERMS SECTION ========== -->
+  <div class="section" id="sec-terms">
+    <div class="card green">
+      <div class="card-header">
+        <div class="card-icon icon-green">📋</div>
+        <div class="card-title">الكلمات المفتاحية للوحدة</div>
+      </div>
+      <div class="card-body">
+        <div class="terms-grid">
+          <div class="term-card"><div class="term-ar">🏃 التربية الحركية</div><div class="term-en">Movement Education</div></div>
+          <div class="term-card"><div class="term-ar">♿ ذوو الاحتياجات الخاصة</div><div class="term-en">Children With Special Needs</div></div>
+          <div class="term-card"><div class="term-ar">👦 الحركة والطفل</div><div class="term-en">Child and Movement</div></div>
+          <div class="term-card"><div class="term-ar">🦽 الطفل المعاق</div><div class="term-en">A Disabled Child</div></div>
+          <div class="term-card"><div class="term-ar">🧠 المجال النفس-حركي</div><div class="term-en">Psychomotor Domain</div></div>
+          <div class="term-card"><div class="term-ar">📐 أبعاد الحركة</div><div class="term-en">Dimensions of Movement</div></div>
+          <div class="term-card"><div class="term-ar">🗺️ الوعي الفراغي</div><div class="term-en">Spatial Awareness</div></div>
+          <div class="term-card"><div class="term-ar">🧭 الوعي الاتجاهي</div><div class="term-en">Directional Awareness</div></div>
+          <div class="term-card"><div class="term-ar">⏱️ الوعي الزماني</div><div class="term-en">Temporal Awareness</div></div>
+          <div class="term-card"><div class="term-ar">🎓 نمو الحركة</div><div class="term-en">Motor Development</div></div>
+          <div class="term-card"><div class="term-ar">🔄 التعلم الحركي</div><div class="term-en">Motor Learning</div></div>
+          <div class="term-card"><div class="term-ar">🏋️ اللياقة البدنية</div><div class="term-en">Physical Fitness</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="keyword-box">
+      <h3>🔬 العلماء والمراجع الرئيسية</h3>
+      <div class="kw-row"><span class="kw-ar">🔬 Werner</span><span class="kw-en">الوعي الحسي والحركي في المجتمعات</span></div>
+      <div class="kw-row"><span class="kw-ar">📚 Gallhue (1996)</span><span class="kw-en">مفهوم التربية الحركية وأبعادها</span></div>
+      <div class="kw-row"><span class="kw-ar">📊 Hare (1972)</span><span class="kw-en">تصنيف المجال النفس-حركي</span></div>
+      <div class="kw-row"><span class="kw-ar">🎓 جمال (1998)</span><span class="kw-en">المراجع العربية في التربية الحركية</span></div>
+    </div>
+
+    <div class="card blue">
+      <div class="card-header">
+        <div class="card-icon icon-blue">💎</div>
+        <div class="card-title">أسئلة الكتاب الرسمية (من الفصل الأول)</div>
+      </div>
+      <div class="card-body">
+        <ul class="steps">
+          <li><div class="step-num">1</div><div>ما المقصود بالتربية الحركية وطفل المعاق؟</div></li>
+          <li><div class="step-num">2</div><div>هل يوجد فرق بين هدف التربية الحركية ومعاقاً، وهدف التربية الحركية وطفل عادي، وهل بالشرح؟</div></li>
+          <li><div class="step-num">3</div><div>ضع برمزة (✓) ما بعدها صحيحة وبرمزة (×) ما بعدها خاطئة:<br>
+            أ- إن الحركة في نمية شكل الاتصال والتكيف مع الطفل المعاق (  )<br>
+            ب- تصب أهداف التربية الحركية على اكتساب الطفل نمواً حركياً ولا يتجاوزها (  )
+          </div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div><!-- END wrapper -->
+
+<!-- Results Modal -->
+<div class="modal-overlay" id="results-modal">
+  <div class="modal-box">
+    <span class="modal-trophy" id="modal-trophy">🏆</span>
+    <div class="modal-title" id="modal-title">نتيجتك النهائية</div>
+    <div class="modal-score-big" id="modal-score">0/50</div>
+    <div class="modal-msg" id="modal-msg"></div>
+    <button class="modal-close" onclick="closeModal()">🔄 إغلاق</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  DATA
+// ============================================================
+const quizData = [
+  // TRUE / FALSE (25 questions)
+  { type:'tf', q:'التربية الحركية تُعدّ مرحلة أساسية تشمل نمو الطفل الحركي والمعرفي والصحي.', ans:true, exp:'صحيح – التربية الحركية تشمل جوانب الحركة والمعرفة والصحة معاً.' },
+  { type:'tf', q:'ذوو الاحتياجات الخاصة هم من يعانون قصوراً في حواسهم أو أعضائهم مما يستلزم برامج تربوية خاصة.', ans:true, exp:'صحيح – التعريف الرسمي لذوي الاحتياجات الخاصة.' },
+  { type:'tf', q:'يرى Werner أن الأطفال في المجتمعات الحضرية أكثر وعياً حسياً وحركياً من الريفيين.', ans:false, exp:'خطأ – العكس صحيح؛ الأطفال الريفيون يمتلكون وعياً حسياً وحركياً أعلى.' },
+  { type:'tf', q:'الحركة الانعكاسية هي حركات لا إرادية فطرية موجودة منذ الولادة.', ans:true, exp:'صحيح – الحركات الانعكاسية لا إرادية ومكتسبة منذ الميلاد.' },
+  { type:'tf', q:'القدرات البدنية في تصنيف المجال النفس-حركي تتعلق بتحسين الاتصال الاجتماعي فقط.', ans:false, exp:'خطأ – القدرات البدنية تتعلق بمكونات اللياقة البدنية كالتحمل والمرونة والقوة.' },
+  { type:'tf', q:'الهدف الحركي الرابع يشمل إكساب الطفل الوعي بالجسم والوعي المكاني والاتجاهي والزماني.', ans:true, exp:'صحيح – الهدف الحركي الرابع يتضمن الأنواع الأربعة للوعي.' },
+  { type:'tf', q:'يجوز إبعاد الطفل المعاق عن الأداء الحركي الجماعي إذا كان مستواه ضعيفاً.', ans:false, exp:'خطأ – يجب إتاحة فرصة الاشتراك لجميع الأطفال دون استثناء.' },
+  { type:'tf', q:'الفراغ الشخصي هو الفراغ الذي يمكن الوصول إليه من خلال حركات الجسم دون تنقل.', ans:true, exp:'صحيح – الفراغ الشخصي محدود بنطاق جسم الفرد دون التحرك من مكانه.' },
+  { type:'tf', q:'الحركات المنفردة هي حركات يتحرك فيها الجسم مسافات متساوية في أزمنة متساوية.', ans:true, exp:'صحيح – هذا هو تعريف الحركات المنفردة.' },
+  { type:'tf', q:'الاتجاه في الوعي الفراغي يقتصر على اتجاه الأمام والخلف فقط.', ans:false, exp:'خطأ – الاتجاهات تشمل أماماً وخلفاً ويميناً ويساراً وجانباً وأعلى وأسفل.' },
+  { type:'tf', q:'التربية الحركية جزء أساسي مكمّل للعملية التربوية والتعليمية وليست تدريباً بدنياً فقط.', ans:true, exp:'صحيح – التربية الحركية أشمل من مجرد تدريب بدني.' },
+  { type:'tf', q:'يجب عقد مقارنات مستمرة بين مستويات الأطفال المعاقين لتحفيزهم.', ans:false, exp:'خطأ – يجب تجنب عقد مقارنات بين الأطفال وتقييم كل طفل بذاته.' },
+  { type:'tf', q:'تصنيف Hare للمجال النفس-حركي وُضع عام 1972.', ans:true, exp:'صحيح – هذا هو التاريخ الصحيح.' },
+  { type:'tf', q:'الحركة وسيلة لتعبير الانفعالات المكبوتة والتخلص من الهواجس والمخاوف.', ans:true, exp:'صحيح – هذا من أهداف التربية الحركية النفسية.' },
+  { type:'tf', q:'الفراغ العام هو ملك الفرد الخاصة بينما الفراغ الشخصي مشترك بين الجميع.', ans:false, exp:'خطأ – الفراغ الشخصي ملك الفرد والفراغ العام مشترك.' },
+  { type:'tf', q:'تنمية الصفات البدنية مثل القوة تُعدّ من الأهداف الحركية للتربية الحركية لذوي الاحتياجات الخاصة.', ans:true, exp:'صحيح – تقوية الجسم والصفات البدنية من الأهداف الحركية.' },
+  { type:'tf', q:'الحركات الأساسية الأصلية هي حركات اجتماعية مكتسبة من البيئة.', ans:false, exp:'خطأ – هي حركات فطرية مجبولة وليست مكتسبة من البيئة.' },
+  { type:'tf', q:'يُعدّ تقوية وتعبير الذات من إسهامات التربية الحركية في الجانب النفسي.', ans:true, exp:'صحيح – هذا من إسهامات التربية الحركية النفسية.' },
+  { type:'tf', q:'المسار في الوعي الفراغي هو خط الحركة المتكأ يتحرك خلاله الشخص في الفراغ.', ans:true, exp:'صحيح – هذا هو تعريف المسار في الوعي الفراغي.' },
+  { type:'tf', q:'Gallhue يرى أن التربية الحركية لها بُعد واحد فقط هو نمو الحركة.', ans:false, exp:'خطأ – Gallhue يرى أنها ذات بُعدين: نمو الحركة والتعلم من خلال الحركة.' },
+  { type:'tf', q:'الطفل يكتشف محيطه من خلال الحركة وهي طريقه الأول للتعلم.', ans:true, exp:'صحيح – الحركة هي الوسيلة الأولى للطفل لاستكشاف محيطه.' },
+  { type:'tf', q:'يجب على مقدم البرنامج تجنب تنويع الأنشطة حفاظاً على وقت الطفل المعاق.', ans:false, exp:'خطأ – يجب تنويع الأنشطة لمراعاة الفروق الفردية وتعزيز الدافعية.' },
+  { type:'tf', q:'الوعي الاتجاهي يشمل معرفة الطفل بالاتجاهات المختلفة في الفراغ.', ans:true, exp:'صحيح – الوعي الاتجاهي جزء من الأهداف الحركية.' },
+  { type:'tf', q:'الحركات المهارية تُعبّر عن الكفاءة في أداء أنواع متعددة من التجانس الحركي.', ans:true, exp:'صحيح – هذا تعريف الحركات المهارية في تصنيف المجال النفس-حركي.' },
+  { type:'tf', q:'الأطفال في مجتمع ريفي أو حضري يمتلكون وعياً حسياً وحركياً متساوياً تماماً.', ans:false, exp:'خطأ – وفق Werner فالأطفال الريفيون أكثر وعياً حسياً وحركياً.' },
+
+  // MCQ (25 questions)
+  { type:'mcq', q:'من وضع تصنيف المجال النفس-حركي المستخدم في التربية الحركية؟', opts:['Gallhue','Werner','Hare','جمال'], ans:2, exp:'الصحيح: Hare عام 1972' },
+  { type:'mcq', q:'ما عدد مجالات تصنيف المجال النفس-حركي (Hare)؟', opts:['3 مجالات','4 مجالات','6 مجالات','8 مجالات'], ans:2, exp:'الصحيح: 6 مجالات' },
+  { type:'mcq', q:'الوعي الزماني في الأهداف الحركية يعني:', opts:['معرفة الطفل باتجاهات الفراغ','معرفة الطفل بأجزاء جسمه','معرفة الطفل بالوقت ومطابقته بالإيقاع','معرفة الطفل بمساحة الفراغ'], ans:2, exp:'الصحيح: معرفة الطفل بالوقت ومطابقته بالإيقاع والأنماط الوقتية' },
+  { type:'mcq', q:'أي من التالي لا يُعدّ من الأهداف الاجتماعية للتربية الحركية؟', opts:['اكتساب مهارات اجتماعية','اكتساب الإيجابية والتفاعل','تنمية القوة العضلية','اكتساب مشاعر المواطنة'], ans:2, exp:'الصحيح: تنمية القوة العضلية هدف حركي لا اجتماعي' },
+  { type:'mcq', q:'الفراغ الشخصي هو:', opts:['الفراغ المشترك بين الأطفال','الفراغ الذي يمكن الوصول إليه دون تنقل','الفراغ خارج نطاق الجسم','الملعب الرياضي كاملاً'], ans:1, exp:'الصحيح: الفراغ الذي يمكن الوصول إليه من خلال حركات الجسم دون تنقل' },
+  { type:'mcq', q:'ما الذي وجده Werner في مقارنته بين أطفال الريف والمدينة؟', opts:['أطفال المدينة أكثر نشاطاً','أطفال الريف أكثر وعياً حسياً وحركياً','لا فرق بينهما','أطفال المدينة أذكى معرفياً'], ans:1, exp:'الصحيح: أطفال الريف أكثر وعياً حسياً وحركياً' },
+  { type:'mcq', q:'الحركات الانعكاسية تتميز بأنها:', opts:['مكتسبة من البيئة المحيطة','لا إرادية وفطرية منذ الولادة','تحتاج تدريباً مكثفاً','خاصة بالأطفال المعاقين فقط'], ans:1, exp:'الصحيح: لا إرادية وفطرية موجودة منذ الولادة' },
+  { type:'mcq', q:'أي من التالي يُعدّ من أهداف التربية الحركية النفسية؟', opts:['تنمية اللياقة البدنية','تقوية الوعي الاجتماعي','تعبير الانفعالات المكبوتة','تعليم الألعاب الجماعية'], ans:2, exp:'الصحيح: التعبير الحركي عن الانفعالات المكبوتة' },
+  { type:'mcq', q:'الحركات الأساسية الأصلية تشمل:', opts:['الحركات الاستنادية وغير الاستنادية والإجائية','الحركات الانعكاسية فقط','الحركات المهارية المعقدة','حركات التوازن فقط'], ans:0, exp:'الصحيح: الاستنادية وغير الاستنادية والإجائية' },
+  { type:'mcq', q:'ما أبعاد الوعي الفراغي الثلاثة؟', opts:['اللون والشكل والحجم','الاتجاه والمستوى والمسار','الزمن والإيقاع والوقت','القوة والسرعة والمرونة'], ans:1, exp:'الصحيح: الاتجاه والمستوى/المحور والمسار' },
+  { type:'mcq', q:'التربية الحركية للطفل المعاق تهدف أساساً إلى:', opts:['المنافسة مع الأطفال العاديين','الاعتماد الكلي على الآخرين','تحقيق نمو حركي كامل ضمن حدود الإعاقة','العزلة التامة عن المجتمع'], ans:2, exp:'الصحيح: تحقيق نمو حركي كامل قدر الإمكان ضمن حدود الإعاقة' },
+  { type:'mcq', q:'القدرات البدنية في تصنيف المجال النفس-حركي ترتبط بـ:', opts:['الحركات الانعكاسية','الاتصال الحركي','مكونات اللياقة البدنية كالتحمل والمرونة','الحركات المهارية المعقدة'], ans:2, exp:'الصحيح: مكونات اللياقة البدنية' },
+  { type:'mcq', q:'ما أهمية تجنب المقارنات بين مستويات الأطفال في التربية الحركية؟', opts:['لتقليل وقت الحصة','لأن كل طفل يُقيَّم بذاته وقد يتفوق في جانب ويضعف في آخر','لأن الأطفال المعاقين غير قادرين على التنافس','لتوفير التكاليف'], ans:1, exp:'الصحيح: كل طفل له إيقاعه الخاص وقد ينجح في جانب دون الآخر' },
+  { type:'mcq', q:'الوعي بالجسم يعني:', opts:['معرفة أنواع الرياضات','معرفة قواعد الألعاب الجماعية','معرفة الطفل بأجزاء جسمه وتحريكها','معرفة الطفل بالزمن والإيقاع'], ans:2, exp:'الصحيح: معرفة الطفل بأجزاء جسمه وكيفية تحريكها' },
+  { type:'mcq', q:'الاتصال الحركي في تصنيف Hare يشمل:', opts:['الانعكاسات الأولية','حركات التعبير والإيماء والتفسير','حركات التوازن والإدراك البصري','التحمل والمرونة والقوة'], ans:1, exp:'الصحيح: حركات تعبيرية وإيمائية وتفسيرية' },
+  { type:'mcq', q:'يجب أن تكون الخبرة الحركية ذات معنى للطفل المعاق؛ ذلك يعني:', opts:['أن تكون صعبة جداً لتحديه','أن تراعي طبيعته وظروفه ونوع إعاقته','أن تُطابق برامج الأطفال العاديين','أن تُركز على الألعاب التنافسية'], ans:1, exp:'الصحيح: مراعاة طبيعة الطفل وظروفه ونوع إعاقته' },
+  { type:'mcq', q:'الحركات المنفردة هي حركات يتحرك فيها الجسم:', opts:['مسافات متفاوتة في أزمنة متساوية','مسافات متساوية في أزمنة مختلفة','مسافات متساوية في أزمنة متساوية','مسافات مختلفة في أزمنة مختلفة'], ans:2, exp:'الصحيح: مسافات متساوية في أزمنة متساوية' },
+  { type:'mcq', q:'إبراز خبرة النجاح في التربية الحركية يتحقق من خلال:', opts:['تكرار نفس النشاط','تنويع الأنشطة المناسبة لكل طفل','إلغاء الأنشطة الصعبة','رفع مستوى الصعوبة دائماً'], ans:1, exp:'الصحيح: تنويع الأنشطة يُعزز احتمالات النجاح' },
+  { type:'mcq', q:'ما الهدف من تقوية الجهاز العضلي الهيكلي في التربية الحركية للمعاقين؟', opts:['تحقيق أرقام رياضية عالية','اكتساب القوة لتنمية صفات بدنية مناسبة للإعاقة','المنافسة مع الرياضيين الأسوياء','تحسين المظهر الخارجي فقط'], ans:1, exp:'الصحيح: تنمية صفات بدنية تتناسب مع طبيعة الطفل وإعاقته' },
+  { type:'mcq', q:'المستوى والمحور في الوعي الفراغي يُشير إلى:', opts:['سرعة الحركة وتوقيتها','الارتفاع والمستويات التي يتحرك فيها الجسم','قوة الدفع أثناء الحركة','مسافة التنقل من مكان لآخر'], ans:1, exp:'الصحيح: المستويات والمحاور التي يتحرك فيها الجسم' },
+  { type:'mcq', q:'من بين أهداف التربية الحركية الاجتماعية:', opts:['اكتساب القوة العضلية','اكتساب اللياقة القلبية','اكتساب مشاعر المواطنة ومشاعر ثقافية','اكتساب مهارات التوازن'], ans:2, exp:'الصحيح: اكتساب مشاعر المواطنة والمشاعر الثقافية' },
+  { type:'mcq', q:'القدرات الحركية في تصنيف Hare تشمل:', opts:['التحمل والمرونة والطاقة','التعبير والإيماء والتفسير','التوازن والإدراك البصري والوظيفية','الانعكاسات والحركات الفطرية'], ans:2, exp:'الصحيح: التوازن والإدراك البصري والوظيفية' },
+  { type:'mcq', q:'لماذا يجب توفير الوقت الملائم للتعلم الحركي مع المعاقين؟', opts:['لتوفير الجهد على المعلم','لتحفيز الطفل وإتاحة فرصة الإتقان والتعبير عن طاقاته','لأن الطفل المعاق أبطأ تعلماً دائماً','لتقليل عدد الأنشطة'], ans:1, exp:'الصحيح: إتاحة الوقت يُمكّن الطفل من الإتقان والتعبير عن قدراته' },
+  { type:'mcq', q:'الوعي الاتجاهي يشمل معرفة الطفل بـ:', opts:['التوازن الجانبي فقط','الاتجاهات المختلفة: يمين ويسار وأمام وخلف','حجمه في الفراغ','زمن الحركة وإيقاعها'], ans:1, exp:'الصحيح: الاتجاهات المختلفة يمين يسار أمام خلف جانب' },
+  { type:'mcq', q:'ما العلاقة بين الأهداف الحركية وأهداف التربية الحركية الأخرى؟', opts:['منفصلة تماماً ولا علاقة بينها','تتعارض أحياناً','متكاملة ومترابطة لخدمة الطفل بشكل شامل','الأهداف الحركية أقل أهمية من بقية الأهداف'], ans:2, exp:'الصحيح: الأهداف متكاملة ومترابطة لخدمة نمو الطفل بشكل شامل' },
+
+  // ESSAY (10 questions)
+  { type:'essay', q:'اشرح مفهوم التربية الحركية لذوي الاحتياجات الخاصة وعلاقتها بالعملية التربوية.', ans:'التربية الحركية هي مرحلة أساسية تهتم بنمو الطفل الحركي والمعرفي والصحي. وهي جزء مكمّل للعملية التربوية، إذ تعمل من خلال الحركة لا عليها فقط. لذوي الاحتياجات الخاصة، تُصمَّم برامج خاصة تراعي طبيعة كل إعاقة لتحقيق أقصى نمو ممكن: حركياً واجتماعياً ونفسياً وصحياً.' },
+  { type:'essay', q:'وضّح الفرق بين هدف التربية الحركية للطفل المعاق وهدفها للطفل العادي.', ans:'كلاهما يشتركان في تحقيق النمو الشامل (حركي، معرفي، اجتماعي، نفسي). غير أن التربية الحركية للطفل المعاق تُراعي طبيعة الإعاقة وحدودها، وتُصمَّم أنشطة مخصصة تتناسب مع قدرات الطفل المعاق وتعمل على تعويض القصور قدر الإمكان، بينما للطفل العادي تكون الأنشطة أوسع نطاقاً ودون قيود.' },
+  { type:'essay', q:'ناقش أهمية الأهداف الاجتماعية للتربية الحركية لذوي الاحتياجات الخاصة.', ans:'الأهداف الاجتماعية أساسية لأن الطفل المعاق يحتاج إلى الاندماج في المجتمع. تشمل: اكتساب مهارات التفاعل الاجتماعي من خلال الألعاب الجماعية، وتعزيز الإيجابية مع الأقران، واكتساب مشاعر المواطنة والانتماء. هذه الأهداف تُساعد الطفل المعاق على الخروج من العزلة والشعور بالقبول والانتماء.' },
+  { type:'essay', q:'اشرح تصنيف هير (Hare) للمجال النفس-حركي مع ذكر المجالات الستة.', ans:'وضع Hare عام 1972 تصنيفاً يشمل: (1) الحركات الانعكاسية – لا إرادية فطرية. (2) الحركات الأساسية الأصلية – فطرية كالزحف والمشي. (3) القدرات الحركية – التوازن والإدراك البصري. (4) القدرات البدنية – التحمل والمرونة والقوة. (5) الحركات المهارية – بسيطة ومركبة ومعقدة. (6) الاتصال الحركي – حركات تعبيرية وإيمائية.' },
+  { type:'essay', q:'وضّح أبعاد الحركة الأربعة بشكل مفصّل.', ans:'أبعاد الحركة الأربعة هي: (1) الوعي الفراغي – يشمل الاتجاه والمستوى والمسار في الفراغ. (2) الوعي بالجسم – معرفة الطفل بأجزاء جسمه وحركتها. (3) نوع الحركة وزمنها – الصفات النوعية كالسرعة والإيقاع. (4) العلاقات (الدلالات الحركية) – العلاقة بين أجزاء الجسم والأشياء المحيطة.' },
+  { type:'essay', q:'ما الاعتبارات الهامة التي يجب مراعاتها عند تقديم برامج التربية الحركية للمعاقين؟', ans:'أبرز الاعتبارات: (1) أن تكون الخبرة الحركية ذات معنى للطفل. (2) إعداد أنشطة مناسبة لنوع الإعاقة. (3) مراعاة الحمل والراحة. (4) إتاحة فرصة الاشتراك للجميع. (5) إبراز النجاح وتعزيز الدافعية. (6) توفير الوقت الكافي للتعلم. (7) تجنب المقارنات بين الأطفال.' },
+  { type:'essay', q:'ناقش إسهامات التربية الحركية في الارتقاء بالجانب النفسي لذوي الاحتياجات الخاصة.', ans:'الحركة تُسهم نفسياً في: تقوية وتعبير الذات، والتعبير عن الانفعالات المكبوتة، والتخلص من الهواجس والمخاوف، وبناء الفكر والصفاء الذهني، وتنمية مفهوم الذات والثقة بالنفس. كما تُعدّ شكلاً من أشكال الاتصال والتكيف الاجتماعي.' },
+  { type:'essay', q:'اشرح مفهوم الوعي الفراغي وأبعاده الثلاثة بأمثلة تطبيقية.', ans:'الوعي الفراغي يعني إدراك الطفل لمحيطه الفراغي وكيفية التحرك فيه. أبعاده: (1) الاتجاه – مثل التحرك للأمام أو اليمين، (2) المستوى والمحور – مثل التحرك في مستويات مرتفعة أو منخفضة، (3) المسار – مثل الحركة في خط مستقيم أو دائري. تطبيقياً: ألعاب الاتجاهات، والحواجز، والتنقل بين النقاط.' },
+  { type:'essay', q:'لماذا تُعدّ مرحلة الطفولة المبكرة حاسمة في التربية الحركية؟ وضّح بالأدلة.', ans:'مرحلة الطفولة من أهم المراحل لأن: الطفل يُطور مهاراته الحركية الأساسية فيها، وتُرسَّخ عادات الحركة والنشاط. يرى Gallhue أن التربية الحركية تُشكّل التطور المعرفي والاجتماعي والانفعالي. كما أن الحركات الفطرية (الزحف، الوقوف، المشي) تتطور في هذه المرحلة وتُؤثر على مسار النمو الشامل.' },
+  { type:'essay', q:'كيف تُسهم التربية الحركية في الوقاية من الأمراض وتعزيز الصحة لذوي الاحتياجات الخاصة؟', ans:'تُسهم التربية الحركية صحياً من خلال: تقوية الجهاز العضلي الهيكلي، وتحسين وظائف القلب والجهاز التنفسي، وتعليم الطفل أهمية النشاط البدني من أجل الصحة، وتعزيز اللياقة البدنية التي تُقلل من خطر الأمراض المزمنة. كما تُنمّي عادات النشاط البدني المنتظم التي تستمر مع الطفل طوال حياته.' },
+];
+
+// ============================================================
+//  STATE
+// ============================================================
+let correctCount = 0;
+let wrongCount = 0;
+let answered = {}; // qIndex -> 'correct'|'wrong'
+let currentFilter = 'all';
+
+// ============================================================
+//  RENDER QUIZ
+// ============================================================
+function renderQuiz(filter) {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+  currentFilter = filter;
+
+  let filtered = quizData.map((q,i) => ({...q, origIdx:i}));
+  if(filter !== 'all') filtered = filtered.filter(q => q.type === filter);
+
+  filtered.forEach((q, localIdx) => {
+    const i = q.origIdx;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `qcard-${i}`;
+
+    const typeLabel = q.type === 'tf' ? '✅ صح / خطأ' : q.type === 'mcq' ? '🔵 اختياري' : '✍️ مقالي';
+    const typeClass = q.type === 'tf' ? 'green' : q.type === 'mcq' ? 'blue' : 'orange';
+
+    let optionsHTML = '';
+    if(q.type === 'tf') {
+      const state = answered[i];
+      optionsHTML = `<div class="tf-options">
+        <button class="tf-btn ${state === 'correct' && q.ans === true ? 'correct' : state !== undefined && q.ans === true ? 'reveal' : ''}" onclick="answerTF(${i}, true)">✅ صحيح</button>
+        <button class="tf-btn ${state === 'correct' && q.ans === false ? 'correct' : state !== undefined && q.ans === false ? 'reveal' : ''}" onclick="answerTF(${i}, false)">❌ خطأ</button>
+      </div>
+      <div class="ans-reveal ${state !== undefined ? 'show' : ''}" id="exp-${i}"><span class="medal">💡</span> ${q.exp}</div>`;
+    } else if(q.type === 'mcq') {
+      optionsHTML = `<div class="mcq-options">`;
+      q.opts.forEach((opt, oi) => {
+        const state = answered[i];
+        let cls = '';
+        if(state !== undefined) {
+          if(oi === q.ans) cls = 'correct';
+          else if(state === oi && oi !== q.ans) cls = 'wrong';
+        }
+        optionsHTML += `<button class="mcq-btn ${cls}" onclick="answerMCQ(${i}, ${oi})">${opt}</button>`;
+      });
+      optionsHTML += `</div>
+      <div class="ans-reveal ${answered[i] !== undefined ? 'show' : ''}" id="exp-${i}"><span class="medal">💡</span> ${q.exp}</div>`;
+    } else {
+      optionsHTML = `
+        <button class="essay-toggle-btn" onclick="toggleEssay(${i})">🃏 اضغط لعرض الإجابة النموذجية</button>
+        <div class="essay-answer" id="essay-${i}">${q.ans}</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="q-num">
+        <span>السؤال ${localIdx + 1}</span>
+        <span class="qtype-badge" style="background:${typeClass === 'green' ? 'var(--grass-light)' : typeClass === 'blue' ? '#0074d9' : '#e67e22'}">${typeLabel}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      ${optionsHTML}
+    `;
+    container.appendChild(card);
+  });
+
+  updateScore();
+}
+
+function answerTF(i, choice) {
+  if(answered[i] !== undefined) return;
+  const q = quizData[i];
+  const isCorrect = (choice === q.ans);
+  answered[i] = isCorrect ? 'correct' : 'wrong';
+  if(isCorrect) correctCount++; else wrongCount++;
+  updateScore();
+  renderQuiz(currentFilter);
+  // scroll to card
+  setTimeout(() => {
+    const el = document.getElementById(`qcard-${i}`);
+    if(el) el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 50);
+}
+
+function answerMCQ(i, choice) {
+  if(answered[i] !== undefined) return;
+  const q = quizData[i];
+  const isCorrect = (choice === q.ans);
+  answered[i] = isCorrect ? 'correct' : choice;
+  if(isCorrect) correctCount++; else wrongCount++;
+  updateScore();
+  renderQuiz(currentFilter);
+  setTimeout(() => {
+    const el = document.getElementById(`qcard-${i}`);
+    if(el) el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 50);
+}
+
+function toggleEssay(i) {
+  const el = document.getElementById(`essay-${i}`);
+  if(el) el.classList.toggle('show');
+}
+
+function updateScore() {
+  const total = correctCount + wrongCount;
+  const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+  document.getElementById('score-correct').textContent = correctCount;
+  document.getElementById('score-wrong').textContent = wrongCount;
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('progress-text').textContent = `${total} / 50`;
+  document.getElementById('progress-fill').style.width = Math.min((total / 50) * 100, 100) + '%';
+}
+
+function filterQuiz(type, btn) {
+  document.querySelectorAll('.qtab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderQuiz(type);
+}
+
+function showResults() {
+  const total = correctCount + wrongCount;
+  const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+  let trophy, title, msg;
+  if(pct >= 90)      { trophy='🥇'; title='بطل الملعب!'; msg='أداء استثنائي! أنتم في قمة الملعب التعليمي!'; }
+  else if(pct >= 75) { trophy='🥈'; title='لاعب محترف!'; msg='أداء ممتاز! استمروا في التدريب لتصلوا إلى القمة!'; }
+  else if(pct >= 60) { trophy='🥉'; title='متقدمون!'; msg='أداء جيد! راجعوا المحتوى وأعيدوا المحاولة!'; }
+  else               { trophy='🎽'; title='استمروا في التدريب!'; msg='راجعوا المحتوى الدراسي ثم أعيدوا المباراة!'; }
+
+  document.getElementById('modal-trophy').textContent = trophy;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-score').textContent = `${correctCount}/${total}`;
+  document.getElementById('modal-msg').textContent = msg + ` نسبتكم: ${pct}%`;
+  document.getElementById('results-modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('results-modal').classList.remove('show');
+}
+
+// ============================================================
+//  TABS
+// ============================================================
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  event.target.classList.add('active');
+  if(id === 'quiz' && document.getElementById('quiz-container').innerHTML === '') {
+    renderQuiz('all');
+  }
+}
+
+function toggleAcc(el) {
+  el.classList.toggle('open');
+}
+
+// init
+renderQuiz('all');
+</script>
+
+</body>
+</html>
